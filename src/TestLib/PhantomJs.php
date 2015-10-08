@@ -57,7 +57,7 @@ class PhantomJs
     private function isPhantomRunning()
     {
         try {
-            return fsockopen("localhost", $this->port);
+            return @fsockopen("localhost", $this->port);
         } catch (Exception $e) {
         }
     }

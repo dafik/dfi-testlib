@@ -59,10 +59,13 @@ class Mink
     public function ss()
     {
 
-        $bt = debug_backtrace();
+        $bt = debug_backtrace(false);
+
+        $from = $bt[1]['class'] . '::' . $bt[1]['function'];
+
 
         $screenShot = $this->driver->getScreenshot();
-        $path = __DIR__ . '/tmp/' . date_create()->getTimestamp() . microtime() . '.jpg';
+        $path = ROOT . '/tmp/' . $from . '-' . microtime() . '.jpg';
         $wRes = file_put_contents($path, $screenShot);
     }
 
