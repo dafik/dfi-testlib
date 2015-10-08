@@ -1,0 +1,20 @@
+{
+  "name": "dafik/testlib",
+  "description": "test utilities",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Zbyszek Wieczorek",
+      "email": "zbyszek.wieczorek@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "TestLib\\": "src/TestLib/"
+    }
+  }
+}
