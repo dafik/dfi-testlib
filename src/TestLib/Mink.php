@@ -9,6 +9,7 @@
 namespace TestLib;
 
 
+use Behat\Mink\Session;
 use Zumba\Mink\Driver\PhantomJSDriver;
 
 class Mink
@@ -18,6 +19,10 @@ class Mink
      */
     private static $instance;
     private $port;
+
+    /**
+     * @var PhantomJSDriver
+     */
     private $driver;
 
 
@@ -50,22 +55,36 @@ class Mink
 
     public function getSession()
     {
-        $session = new \Behat\Mink\Session($this->driver);
+        $session = new Session($this->driver);
         $session->start();
 
         return $session;
     }
 
-    public function ss()
+    /**
+     * @return PhantomJSDriver
+     */
+    public function getDriver()
+    {
+        return $this->driver;
+    }
+
+
+    public function ss($alias = null)
     {
 
         $bt = debug_backtrace(false);
 
         $from = $bt[1]['class'] . '::' . $bt[1]['function'];
+        $from = str_replace('\\', ':', $from);
 
 
         $screenShot = $this->driver->getScreenshot();
-        $path = ROOT . '/tmp/' . $from . '-' . microtime() . '.jpg';
+        $path = str_replace('\\', '/', ROOT . '/tmp/img/' . microtime(true) . '-' . $from . ($alias ? '--' . $alias : '') . '.jpg');
+        $dir = dirname($path);
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
         $wRes = file_put_contents($path, $screenShot);
     }
 

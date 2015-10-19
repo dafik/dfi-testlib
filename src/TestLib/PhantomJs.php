@@ -124,6 +124,7 @@ class PhantomJs
         if ($this->phantomProcess) {
             proc_terminate($this->phantomProcess);
             proc_close($this->phantomProcess);
+            $this->phantomProcess = null;
         }
         $this->pid = $this->getPid();
         if ($this->pid) {
