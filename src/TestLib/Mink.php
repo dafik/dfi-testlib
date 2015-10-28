@@ -18,12 +18,20 @@ class Mink
      * @var Mink
      */
     private static $instance;
+    /**
+     * @var
+     */
     private $port;
 
     /**
      * @var PhantomJSDriver
      */
     private $driver;
+
+    /**
+     * @var array
+     */
+    protected $cookies = [];
 
 
     /**
@@ -37,22 +45,31 @@ class Mink
         return self::$instance;
     }
 
-    private function __construct()
+    /**
+     * Mink constructor.
+     */
+    protected function __construct()
     {
 
     }
 
+    /**
+     * @param string $port
+     */
     public function setUp($port)
     {
         $this->port = $port;
 
         $phantomServer = 'http://localhost:' . $this->port . '/api';
-        $templateCache = ROOT . "/tmp/phantomjs";
+        $templateCache = ROOT . '/tmp/phantomjs';
 
         $this->driver = new PhantomJSDriver($phantomServer, $templateCache);
 
     }
 
+    /**
+     * @return Session
+     */
     public function getSession()
     {
         $session = new Session($this->driver);
@@ -70,6 +87,10 @@ class Mink
     }
 
 
+    /**
+     * @param string $alias
+     * @throws \Behat\Mink\Exception\DriverException
+     */
     public function ss($alias = null)
     {
 
@@ -80,12 +101,61 @@ class Mink
 
 
         $screenShot = $this->driver->getScreenshot();
-        $path = str_replace('\\', '/', ROOT . '/tmp/img/' . microtime(true) . '-' . $from . ($alias ? '--' . $alias : '') . '.jpg');
+
+        $time = microtime(true);
+        list($time, $usec) = explode('.', $time);
+        $d = new \DateTime(null,new \DateTimeZone('Europe/Warsaw'));
+        $time = $d->format('Y-m-d H:i:s') . ':' . $usec;
+
+
+        $path = str_replace('\\', '/', ROOT . '/tmp/img/' . $time . '-' . $from . ($alias ? '--' . $alias : '') . '.jpg');
         $dir = dirname($path);
         if (!file_exists($dir)) {
             mkdir($dir, 0777, true);
         }
         $wRes = file_put_contents($path, $screenShot);
+        if (!$wRes) {
+            throw new \DomainException('cant write ss');
+        }
     }
+
+    /**
+     * @return array
+     */
+    public function getCookies()
+    {
+        return $this->cookies;
+    }
+
+    /**
+     * @param array $cookies
+     */
+    public function setCookies($cookies)
+    {
+        $this->cookies = $cookies;
+    }
+
+
+    /**
+     * @param string $name
+     * @return string|null
+     */
+    public function getCookie($name)
+    {
+        if (array_key_exists($name, $this->cookies)) {
+            return $this->cookies[$name];
+        }
+        return null;
+    }
+
+    /**
+     * @param string $name
+     * @param string $value
+     */
+    public function setCookie($name, $value)
+    {
+        $this->cookies[$name] = $value;
+    }
+
 
 }
